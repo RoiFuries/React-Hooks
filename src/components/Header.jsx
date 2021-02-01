@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 
 const Header = () => {
-    const [darkMode, setDarkmode] = useState(false);
+    const [darkMode, setDarkmode] = useState(false); 
     
     const  accion = () => {
         setDarkmode(!darkMode)
