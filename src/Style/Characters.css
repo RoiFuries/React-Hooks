@@ -1,0 +1,23 @@
+.container{
+    background-color: chartreuse;
+    width: 800px;
+    height: 100Vh;
+}
+.Chracters{
+    background-color: aqua;
+    display: flex;
+    flex-flow: row wrap;
+
+
+}
+
+.card {
+    /* background-color: blue; */
+    display:flex;
+    border: 1px solid black;
+
+}
+
+.card img {
+    width: 100px;
+}
