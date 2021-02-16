@@ -1,74 +1,73 @@
-import React, {useState, useEffect, useReducer, useMemo } from 'react'
+import React, { useState, useReducer, useMemo, useRef, useCallback } from 'react';
+import Search from './Search';
+import useCharacters from '../hooks/useCharacters'
 
 const initialState = {
-    favorites: []
+  favorites: []
 }
+const API ='https://rickandmortyapi.com/api/character/'
 
 const favoriteReducer = (state, action) => {
-    switch(action.type){
-        case 'ADD_TO_FAVORITE':
-            return{
-                ...state,
-                favorites:[...state.favorites, action.payload]
-            };
-            default:
-                return state;
-    }
+  switch (action.type) {
+    case 'ADD_TO_FAVORITE':
+      return {
+        ...state,
+        favorites: [...state.favorites, action.payload]
+      };
+    default:
+      return state;
+  }
 }
 
-const Chracters  = () => {
+const Characters = () => {
+  const [favorites, dispatch] = useReducer(favoriteReducer, initialState);
+  const [search, setSearch] = useState('');
+  const searchInput = useRef(null);
 
-    const [characters, setCharacters] = useState([]);
-    const [favorites, dispatch] = useReducer(favoriteReducer,initialState)
-    const [search, setSearch] = useState('')
+  const characters = useCharacters(API)
 
+  const handleClick = favorite => {
+    dispatch({ type: 'ADD_TO_FAVORITE', payload: favorite })
+  }
 
-    useEffect(() => {
-        fetch('https://rickandmortyapi.com/api/character')
-        .then(respuesta => respuesta.json())
-        .then(datos => setCharacters(datos.results));  //la info que sacamos del reponse.json se la pasamos a setcaracters
-    }, []);
+  // const handleSearch = () => {
+  //   setSearch(searchInput.current.value);
+  // }
 
-    const handleClick = favorite => {
-        dispatch({type: 'ADD_TO_FAVORITE', payload: favorite})
-    }
+  const handleSearch = useCallback(() => {
+    setSearch(searchInput.current.value);
+  }, [])
 
-    const handleSearch = (event) => {
-        setSearch(event.target.value)
-    }
-    // const filteredUsers = characters.filter((user) =>{
-    //     return user.name.toLowerCase().includes(search.toLowerCase());
-    // })
+  // const filteredUsers = characters.filter((user) => {
+  //   return user.name.toLowerCase().includes(search.toLowerCase());
+  // })
 
-    const filteredUsers = useMemo(() =>
-        characters.filter((user) =>{
-            return user.name.toLowerCase().includes(search.toLowerCase());
-        }),
-        [characters, search]
-    )
+  const filteredUsers = useMemo(() =>
+    characters.filter((user) => {
+      return user.name.toLowerCase().includes(search.toLowerCase());
+    }),
+    [characters, search]
+  )
 
-    return (
-        <div className="Chracters">
+  return (
+    <div className="Characters">
 
-            {favorites.favorites.map(favorite => (
-                <li key="{favorite.id}">
-                    {favorite.name}
-                </li>
-            ))}
+      {favorites.favorites.map(favorite => (
+        <li key={favorite.id}>
+          {favorite.name}
+        </li>
+      ))}
 
-            <div className="Search">
-                <input type="text" value={search} onChange={handleSearch} />
-            </div>
+      <Search search={search} searchInput={searchInput} handleSearch={handleSearch} />
 
-            {filteredUsers.map(character => (
-                <div className="item" key={character.id}>
-                    <h2>{character.name}</h2>
-                    <button type='button' onClick={() => handleClick(character)}>Agregas a Favs </button>
-                </div>
-            ))}
+      {filteredUsers.map(character => (
+        <div className="item" key={character.id}>
+          <h2>{character.name}</h2>
+          <button type="button" onClick={() => handleClick(character)}>Agregar a Favoritos</button>
         </div>
-        
-
-    );
+      ))}
+    </div>
+  );
 }
-export default Chracters
+
+export default Characters;
